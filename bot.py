@@ -28,7 +28,7 @@ async def start(update: Update, context: CallbackContext):
         referrer_id = int(context.args[0])  # Получаем ID пригласившего
 
     # Создаём уникальную ссылку для перехода в твой канал
-    ref_link = f"https://t.me/{context.bot.AirRushRu}?start={user_id}"  # Заменить на имя канала
+    ref_link = f"https://t.me/AirRushRu?start={user_id}"  # Заменить на имя канала
     
     # Добавляем пользователя в базу данных
     conn = sqlite3.connect("users.db")
