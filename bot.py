@@ -79,14 +79,13 @@ async def referrals(update: Update, context: CallbackContext):
 
     if referrals:
         referrals_list = "\n".join([f"User: {username}, ID: {user_id}" for user_id, username in referrals])
-
         await update.message.reply_text(f"Вот список людей, которых ты пригласил:\n{referrals_list}")
     else:
         await update.message.reply_text("Ты никого не пригласил.")
     
     conn.close()
 
-# Функция для получения списка всех пользователей (только для админа)
+# Функция для получения списка всех пользователей (только для админа) с приглашёнными
 async def all_users(update: Update, context: CallbackContext):
     # Проверка, является ли пользователь администратором
     if update.effective_user.id != ADMIN_ID:
@@ -97,11 +96,18 @@ async def all_users(update: Update, context: CallbackContext):
     cursor = conn.cursor()
     
     # Получаем всех пользователей из базы данных
-    cursor.execute("SELECT user_id, username FROM users")
+    cursor.execute("SELECT user_id, username, invites_count FROM users")
     users = cursor.fetchall()
 
     if users:
-        users_list = "\n".join([f"User: {username}, ID: {user_id}" for user_id, username in users])
+        users_list = ""
+        for user_id, username, invites_count in users:
+            # Получаем список рефералов для каждого пользователя
+            cursor.execute("SELECT user_id FROM users WHERE referrer_id = ?", (user_id,))
+            referrals = cursor.fetchall()
+            referrals_count = len(referrals)  # Количество рефералов
+            users_list += f"User: {username}, ID: {user_id}, Invites: {invites_count}, Referrals: {referrals_count}\n"
+
         await update.message.reply_text(f"Список всех пользователей:\n{users_list}")
     else:
         await update.message.reply_text("Нет зарегистрированных пользователей.")
