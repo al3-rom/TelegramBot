@@ -29,19 +29,25 @@ async def start(update: Update, context: CallbackContext):
         referrer_id = int(context.args[0])  # Получаем ID пригласившего
 
     # Создаём уникальную ссылку для перехода в твой канал
-    ref_link = f"https://t.me/AirRushRu?start={user_id}"  # Заменить на имя твоего канала
+    ref_link = f"https://t.me/AirRushEn?start={user_id}"  # Заменить на имя твоего канала
     
     # Добавляем пользователя в базу данных
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT OR REPLACE INTO users (user_id, username, referrer_id, invites_count) VALUES (?, ?, ?, ?)",
-                   (user_id, update.effective_user.username, referrer_id, 0))
+    
+    # Если пользователя нет в базе данных, добавляем
+    cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
+    if cursor.fetchone() is None:
+        cursor.execute("INSERT INTO users (user_id, username, referrer_id, invites_count) VALUES (?, ?, ?, ?)",
+                       (user_id, update.effective_user.username, referrer_id, 0))
     conn.commit()
 
     # Если был реферальный код, увеличиваем количество приглашений у реферера
     if referrer_id:
-        cursor.execute("UPDATE users SET invites_count = invites_count + 1 WHERE user_id = ?", (referrer_id,))
-        conn.commit()
+        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
+        if cursor.fetchone():  # Проверяем, что реферер существует
+            cursor.execute("UPDATE users SET invites_count = invites_count + 1 WHERE user_id = ?", (referrer_id,))
+            conn.commit()
 
     conn.close()
 
