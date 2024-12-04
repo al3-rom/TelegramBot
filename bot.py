@@ -22,13 +22,13 @@ def create_db():
 async def start(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     referrer_id = None
-    
+
     # Если в аргументах есть ID пригласившего, то записываем его
     if context.args:
         referrer_id = int(context.args[0])  # Получаем ID пригласившего
 
-    # Создаём уникальную ссылку для пользователя
-    ref_link = f"https://t.me/{context.bot.username}?start={user_id}"
+    # Создаём уникальную ссылку для перехода в твой канал
+    ref_link = f"https://t.me/AirRush?start={user_id}"  # Изменить "MyChannel" на имя твоего канала
     
     # Добавляем пользователя в базу данных
     conn = sqlite3.connect("users.db")
@@ -43,8 +43,8 @@ async def start(update: Update, context: CallbackContext):
         conn.commit()
 
     conn.close()
-    
-    await update.message.reply_text(f"Привет! Вот твоя реферальная ссылка: {ref_link}")
+
+    await update.message.reply_text(f"Привет! Вот твоя реферальная ссылка для приглашения в канал: {ref_link}")
 
 # Функция для проверки статистики
 async def stats(update: Update, context: CallbackContext):
@@ -79,4 +79,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
