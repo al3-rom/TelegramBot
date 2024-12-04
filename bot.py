@@ -78,7 +78,7 @@ async def referrals(update: Update, context: CallbackContext):
     referrals = cursor.fetchall()
 
     if referrals:
-        referrals_list = "\n".join([f"User: {username}, ID: {user_id}" for user_id, username in referrals])
+        referrals_list = "\n".join([f"User: {username}, ID: {ref_user_id}" for ref_user_id, username in referrals])
         await update.message.reply_text(f"Вот список людей, которых ты пригласил:\n{referrals_list}")
     else:
         await update.message.reply_text("Ты никого не пригласил.")
@@ -102,10 +102,9 @@ async def all_users(update: Update, context: CallbackContext):
     if users:
         users_list = ""
         for user_id, username, invites_count in users:
-            # Получаем список рефералов для каждого пользователя
-            cursor.execute("SELECT user_id FROM users WHERE referrer_id = ?", (user_id,))
-            referrals = cursor.fetchall()
-            referrals_count = len(referrals)  # Количество рефералов
+            # Получаем количество рефералов для каждого пользователя
+            cursor.execute("SELECT COUNT(*) FROM users WHERE referrer_id = ?", (user_id,))
+            referrals_count = cursor.fetchone()[0]  # Количество рефералов
             users_list += f"User: {username}, ID: {user_id}, Invites: {invites_count}, Referrals: {referrals_count}\n"
 
         await update.message.reply_text(f"Список всех пользователей:\n{users_list}")
