@@ -1,10 +1,9 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
-import os
 import sqlite3
 
 # Получение токена из переменной окружения
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TOKEN = "7696894088:AAFASSL-M97BpSWwK7chZix0cvqV7QKUpj4"
 ADMIN_ID = 718607328  # Заменить на свой Telegram ID
 
 # Создание базы данных для хранения информации о пользователях
