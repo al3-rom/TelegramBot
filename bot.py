@@ -79,6 +79,7 @@ async def referrals(update: Update, context: CallbackContext):
 
     if referrals:
         referrals_list = "\n".join([f"User: {username}, ID: {user_id}" for user_id, username in referrals])
+
         await update.message.reply_text(f"Вот список людей, которых ты пригласил:\n{referrals_list}")
     else:
         await update.message.reply_text("Ты никого не пригласил.")
